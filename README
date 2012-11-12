@@ -1,0 +1,26 @@
+================================================================================
+CSS Color Table
+v0.1.1 (2006.08.01)
+
+Jason Sims <jason@symmetriq.net>
+================================================================================
+
+A PHP script that parses a CSS file, collects all of the color values, converts
+them to other color representations and displays them all in a sortable table.
+
+This should be placed in the same directory as the CSS file. By default, it
+looks for a file called 'style.css'. You can edit this at the top of the script.
+
+Currently this only looks for color values in hex format, either in full or
+using shorthand notation (e.g. #376, which expands to #337766).
+
+-------------
+Release Notes
+-------------
+
+> Version 0.1.1 (2006.08.01)
+- Added str_split function (found here: http://php.net/str_split)
+  for PHP 4 compatibility (str_split was added in PHP 5)
+
+> Version 0.1 (2006.07.31)
+- Initial release
