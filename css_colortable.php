@@ -1,6 +1,6 @@
 <?php
 /*====================================================================*\
-  CSS Color Table 0.1.1
+  CSS Color Table 0.1.2
   Jason Sims <jason@symmetriq.net>
 \*====================================================================*/
 
@@ -36,22 +36,22 @@ $sort = 'l';
 // don't modify anything past this point unless you know what you're doing
 
 // compatibility for PHP 4 (since str_split requires PHP 5)
-if (!function_exists('str_split')) { 
-	function str_split($string,$split_length=1) { 
-		$count = strlen($string); 
-		if ($split_length < 1) { 
-			return false; 
-		} elseif ($split_length > $count) { 
-			return array($string); 
-		} else { 
-			$num = (int)ceil($count/$split_length); 
-			$ret = array(); 
-			for ($i=0; $i < $num; $i++) { 
-				$ret[] = substr($string,$i*$split_length,$split_length); 
-			} 
-			return $ret; 
-		}   
-	} 
+if (!function_exists('str_split')) {
+	function str_split($string,$split_length=1) {
+		$count = strlen($string);
+		if ($split_length < 1) {
+			return false;
+		} elseif ($split_length > $count) {
+			return array($string);
+		} else {
+			$num = (int)ceil($count/$split_length);
+			$ret = array();
+			for ($i=0; $i < $num; $i++) {
+				$ret[] = substr($string,$i*$split_length,$split_length);
+			}
+			return $ret;
+		}
+	}
 }
 
 $colors = array();
@@ -69,7 +69,7 @@ $sort_name = array(
 	'v' => 'HSV value'
 );
 
-$sort_option = $_GET['sort'] ? $_GET['sort'] : $sort;
+$sort_option = isset($_GET['sort']) ? $_GET['sort'] : $sort;
 
 $contents = file_get_contents($file);
 
@@ -79,8 +79,11 @@ foreach ($matches[1] as $css_color) {
 
 	// expand to full hex color if using CSS shorthand
 	if (strlen($css_color) == 3) {
-		for ($i = 0; $i < 3; $i++)
-			$hex .= substr($css_color, $i, 1) . substr($css_color, $i, 1);
+	  $hexParts = '';
+		for ($i = 0; $i < 3; $i++) {
+			$hexParts .= substr($css_color, $i, 1) . substr($css_color, $i, 1);
+		}
+		$hex = $hexParts;
 	} else {
 		$hex = $css_color;
 	}
@@ -90,8 +93,9 @@ foreach ($matches[1] as $css_color) {
 	// get color as decimal for ID and linear sort
 	$key = hexdec($hex);
 
-	if (!array_key_exists($key, $colors))
+	if (!array_key_exists($key, $colors)) {
 		$colors[$key] = get_color_info($hex);
+	}
 
 	unset($hex);
 
@@ -105,21 +109,24 @@ function custom_sort($a, $b) {
 
 	global $sort_option, $reverse_sort;
 
-	if ($b[$sort_option] == $a[$sort_option])
+	if ($b[$sort_option] == $a[$sort_option]) {
 		return 0;
+	}
 
-	if ($reverse_sort)
+	if (isset($reverse_sort)) {
 		return ($b[$sort_option] < $a[$sort_option]) ? -1 : 1;
-	else
+	} else {
 		return ($b[$sort_option] > $a[$sort_option]) ? -1 : 1;
+	}
 
 }
 
 if ($sort_option == 'hex') {
-	if ($reverse_sort)
+	if (isset($reverse_sort)) {
 		krsort($colors);
-	else
+	} else {
 		ksort($colors);
+	}
 } else {
 	usort($colors, 'custom_sort');
 }
@@ -153,10 +160,11 @@ $table_rows = implode("\n", $rows);
 //-------------------------
 
 foreach ($sort_name as $key => $value) {
-	if ($key == $sort_option)
+	if ($key == $sort_option) {
 		$menu_items[] = '<div class="button">' . $value . '</div>';
-	else
+	} else {
 		$menu_items[] = '<a href="?sort=' . $key . '" class="button">' . $value . '</a>';
+	}
 }
 
 $menu = implode("\n\t", $menu_items);
@@ -282,8 +290,9 @@ function get_color_info($hex) {
 
 	$rgb_parts = str_split($hex, 2);
 
-	foreach ($rgb_parts as $k => $h)
+	foreach ($rgb_parts as $k => $h) {
 		$rgb_parts[$k] = hexdec($h);
+	}
 
 	list($r, $g, $b) = $rgb_parts;
 
@@ -302,7 +311,7 @@ function get_color_info($hex) {
 	//-------------------------
 	// Return
 	//-------------------------
-	
+
 	return array(
 		'hex' => $hex,		// RGB as hex
 		'r' => $r,			// red
@@ -345,10 +354,11 @@ function rgb_to_hsl($r, $g, $b) {
 		$s = 0;
 	} else {
 
-		if ($l < 0.5)
+		if ($l < 0.5) {
 			$s = $delta_max / ($rgb_max + $rgb_min);
-		else
+		} else {
 			$s = $delta_max / (2 - $rgb_max - $rgb_min);
+		}
 
 		$delta_r = ((($rgb_max - $r) / 6) + ($rgb_max / 2)) / $delta_max;
 		$delta_g = ((($rgb_max - $g) / 6) + ($rgb_max / 2)) / $delta_max;
